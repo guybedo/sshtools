@@ -26,3 +26,5 @@
 .recommenders
 **/.mvn
 **/target
+
+src/main/java/com/akalea/sshtools/tools/
