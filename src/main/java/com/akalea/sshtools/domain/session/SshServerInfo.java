@@ -8,18 +8,34 @@ public class SshServerInfo {
     private String password;
     private String hostname;
     private int    port = 22;
-    private String passkeyFile;
+
+    private String privateKey;
+    private String publicKey;
+
+    private String privateKeyFile;
     private String passphrase;
 
     public SshServerInfo() {
 
     }
-
-    public SshServerInfo(String username, String hostname, String passkeyFile, String passphrase) {
+    
+    public SshServerInfo(
+        String username,
+        String hostname) {
         super();
         this.username = username;
         this.hostname = hostname;
-        this.passkeyFile = passkeyFile;
+    }
+
+    public SshServerInfo(
+        String username,
+        String hostname,
+        String privateKeyFile,
+        String passphrase) {
+        super();
+        this.username = username;
+        this.hostname = hostname;
+        this.privateKeyFile = privateKeyFile;
         this.passphrase = passphrase;
     }
 
@@ -31,55 +47,79 @@ public class SshServerInfo {
     }
 
     public boolean isPasskeyDefined() {
-        return !StringUtils.isEmpty(passkeyFile);
+        return !StringUtils.isEmpty(privateKeyFile) || !StringUtils.isEmpty(privateKey);
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public SshServerInfo setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     public String getHostname() {
         return hostname;
     }
 
-    public void setHostname(String hostname) {
+    public SshServerInfo setHostname(String hostname) {
         this.hostname = hostname;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public SshServerInfo setPort(int port) {
         this.port = port;
+        return this;
     }
 
-    public String getPasskeyFile() {
-        return passkeyFile;
+    public String getPrivateKeyFile() {
+        return privateKeyFile;
     }
 
-    public void setPasskeyFile(String passkeyFile) {
-        this.passkeyFile = passkeyFile;
+    public SshServerInfo setPrivateKeyFile(String passkeyFile) {
+        this.privateKeyFile = passkeyFile;
+        return this;
     }
 
     public String getPassphrase() {
         return passphrase;
     }
 
-    public void setPassphrase(String passphrase) {
+    public SshServerInfo setPassphrase(String passphrase) {
         this.passphrase = passphrase;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public SshServerInfo setPassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public SshServerInfo setPrivateKey(String passkey) {
+        this.privateKey = passkey;
+        return this;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public SshServerInfo setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+        return this;
     }
 
 }

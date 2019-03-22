@@ -1,5 +1,6 @@
 package com.akalea.sshtools.domain.session;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,31 +41,66 @@ public class SshSession {
     }
 
     public static SshSession ssh(SshServerInfo server) {
-        SshSession session =
-            server.isPasskeyDefined()
-                ? sshSession(
+        if (server.isPasskeyDefined()) {
+            if (!StringUtils.isEmpty(server.getPrivateKeyFile()))
+                return sshSession(
                     server.getUsername(),
                     server.getHostname(),
                     server.getPort(),
-                    server.getPasskeyFile(),
-                    server.getPassphrase())
-                : sshSession(
+                    server.getPrivateKeyFile(),
+                    server.getPassphrase());
+            else
+                return sshSession(
                     server.getUsername(),
                     server.getHostname(),
                     server.getPort(),
-                    server.getPassword());
-        return session;
+                    server.getPrivateKey(),
+                    server.getPublicKey(),
+                    server.getPassphrase());
+        } else {
+            return sshSession(
+                server.getUsername(),
+                server.getHostname(),
+                server.getPort(),
+                server.getPassword());
+        }
     }
 
     private static SshSession sshSession(
         String username,
         String hostname,
         int port,
-        String passkeyFile,
+        String privateKeyFile,
         String passphrase) {
         try {
             JSch jsch = new JSch();
-            jsch.addIdentity(passkeyFile, passphrase);
+            jsch.addIdentity(privateKeyFile, passphrase);
+            Session session = jsch.getSession(username, hostname, port);
+            return new SshSession(session);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static SshSession sshSession(
+        String username,
+        String hostname,
+        int port,
+        String privateKey,
+        String publicKey,
+        String passphrase) {
+        try {
+            JSch jsch = new JSch();
+            byte[] passBytes =
+                Optional
+                    .ofNullable(passphrase)
+                    .map(p -> p.getBytes(Charset.forName("UTF-8")))
+                    .orElse(null);
+            jsch.addIdentity(
+                username,
+                privateKey.getBytes(Charset.forName("UTF-8")),
+                publicKey.getBytes(Charset.forName("UTF-8")),
+                passBytes);
             Session session = jsch.getSession(username, hostname, port);
             return new SshSession(session);
         } catch (Exception e) {
