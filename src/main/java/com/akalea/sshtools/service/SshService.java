@@ -5,6 +5,7 @@ import java.util.List;
 import com.akalea.sshtools.domain.command.SftpCommand;
 import com.akalea.sshtools.domain.command.SshCommand;
 import com.akalea.sshtools.domain.command.SshCommandExecution;
+import com.akalea.sshtools.domain.connection.SshTunnel;
 import com.akalea.sshtools.domain.session.SshServerInfo;
 import com.akalea.sshtools.domain.session.SshSession;
 
@@ -38,4 +39,12 @@ public class SshService {
             .sftp((List<SshCommand>) (List) commands, failOnError, false);
     }
 
+    public static SshTunnel tunnel(
+        SshServerInfo server,
+        String remoteHost,
+        int remotePort) {
+        return SshSession
+            .of(server)
+            .tunnel(remoteHost, remotePort);
+    }
 }

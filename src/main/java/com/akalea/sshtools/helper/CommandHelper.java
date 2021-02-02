@@ -2,6 +2,7 @@ package com.akalea.sshtools.helper;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,8 +34,31 @@ public class CommandHelper {
                     public List<ProcessInfo> apply(List<String> stdouts) {
                         if (stdouts == null || stdouts.size() == 0)
                             return Lists.newArrayList();
+                        return stdouts.stream().map(line -> {
+                            String[] data = line.trim().split(" ");
+                            String args =
+                                StringUtils.join(
+                                    Stream.of(data).skip(1).collect(Collectors.toList()),
+                                    " ");
+                            return new ProcessInfo(data[0], args);
+                        }).filter(processInfo -> processInfo != null).collect(Collectors.toList());
+                    }
+                });
+        }
+
+        public SshCommand findProcesses(Pattern pattern) {
+            return new SshCommand<List<ProcessInfo>>(
+                "ps -eo pid,args",
+                null,
+                new Function<List<String>, List<ProcessInfo>>() {
+
+                    @Override
+                    public List<ProcessInfo> apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return Lists.newArrayList();
                         return stdouts
                             .stream()
+                            .filter(line -> pattern.matcher(line).matches())
                             .map(line -> {
                                 String[] data = line.trim().split(" ");
                                 String args =
@@ -59,18 +83,14 @@ public class CommandHelper {
                     public List<ProcessInfo> apply(List<String> stdouts) {
                         if (stdouts == null || stdouts.size() == 0)
                             return Lists.newArrayList();
-                        return stdouts
-                            .stream()
-                            .map(line -> {
-                                String[] data = line.split(" ");
-                                String args =
-                                    StringUtils.join(
-                                        Stream.of(data).skip(1).collect(Collectors.toList()),
-                                        " ");
-                                return new ProcessInfo(data[0], args);
-                            })
-                            .filter(processInfo -> processInfo != null)
-                            .collect(Collectors.toList());
+                        return stdouts.stream().map(line -> {
+                            String[] data = line.split(" ");
+                            String args =
+                                StringUtils.join(
+                                    Stream.of(data).skip(1).collect(Collectors.toList()),
+                                    " ");
+                            return new ProcessInfo(data[0], args);
+                        }).filter(processInfo -> processInfo != null).collect(Collectors.toList());
                     }
                 });
         }
@@ -98,8 +118,7 @@ public class CommandHelper {
                     public List<FileInfo> apply(List<String> stdouts) {
                         if (stdouts == null || stdouts.size() == 0)
                             return Lists.newArrayList();
-                        return stdouts
-                            .stream()
+                        return stdouts.stream()
                             .map(line -> FileInfo.fromStdout(path, line))
                             .filter(fileInfo -> fileInfo != null)
                             .collect(Collectors.toList());

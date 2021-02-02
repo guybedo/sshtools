@@ -1,7 +1,10 @@
 package com.akalea.sshtools.domain.session;
 
 public enum SshConnectionType {
-        command("exec"), shell("shell"), sftp("sftp");
+        command("exec"),
+        shell("shell"),
+        sftp("sftp"),
+        tunnel("tunnel");
 
     private String channelType;
 

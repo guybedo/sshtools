@@ -54,6 +54,8 @@ public abstract class SshConnection {
             return session -> new SshExecConnection(session);
         if (SshConnectionType.sftp.equals(type))
             return session -> new SftpConnection(session);
+        if (SshConnectionType.tunnel.equals(type))
+            return session -> new SshTunnel(session);
         throw new RuntimeException("Unknown channel type");
     }
 

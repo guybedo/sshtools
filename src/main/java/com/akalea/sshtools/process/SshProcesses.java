@@ -2,6 +2,7 @@ package com.akalea.sshtools.process;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.akalea.sshtools.domain.session.SshServerInfo;
@@ -19,7 +20,20 @@ public class SshProcesses {
     }
 
     public static class Processes {
-        public List<ProcessInfo> findProcesses(SshServerInfo serverInfo, String name) {
+        public List<ProcessInfo> findProcessesByName(SshServerInfo serverInfo, String name) {
+            return SshService
+                .ssh(
+                    serverInfo,
+                    Lists.newArrayList(CommandHelper.processes().findProcesses(name)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> (List<ProcessInfo>) e.getResult())
+                .orElse(Lists.newArrayList());
+        }
+        
+        public List<ProcessInfo> findProcessesByName(SshServerInfo serverInfo, Pattern name) {
             return SshService
                 .ssh(
                     serverInfo,
@@ -32,7 +46,7 @@ public class SshProcesses {
                 .orElse(Lists.newArrayList());
         }
 
-        public List<ProcessInfo> findProcesses(SshServerInfo serverInfo, List<String> pids) {
+        public List<ProcessInfo> findProcessesByPid(SshServerInfo serverInfo, List<String> pids) {
             return SshService
                 .ssh(
                     serverInfo,
@@ -45,12 +59,12 @@ public class SshProcesses {
                 .orElse(Lists.newArrayList());
         }
 
-        public void killProcesses(
+        public void killProcessesByName(
             SshServerInfo serverInfo,
             String name,
             int gracefulPeriodSec,
             int checkIntervalMsec) {
-            List<ProcessInfo> processes = findProcesses(serverInfo, name);
+            List<ProcessInfo> processes = findProcessesByName(serverInfo, name);
             if (processes.size() == 0)
                 return;
 
@@ -59,17 +73,17 @@ public class SshProcesses {
                     .stream()
                     .map(p -> p.getPid())
                     .collect(Collectors.toList());
-            killProcesses(serverInfo, pids, gracefulPeriodSec, checkIntervalMsec);
+            killProcessesByPid(serverInfo, pids, gracefulPeriodSec, checkIntervalMsec);
         }
 
-        public void killProcesses(
+        public void killProcessesByPid(
             SshServerInfo serverInfo,
             List<String> pids,
             int gracefulPeriodSec,
             int checkIntervalMsec) {
             sigintProcesses(serverInfo, pids);
 
-            Supplier<Boolean> condition = () -> findProcesses(serverInfo, pids).size() == 0;
+            Supplier<Boolean> condition = () -> findProcessesByPid(serverInfo, pids).size() == 0;
             Boolean result =
                 ThreadUtils.waitForCondition(
                     condition,

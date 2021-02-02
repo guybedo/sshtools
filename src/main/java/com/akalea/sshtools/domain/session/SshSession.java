@@ -15,6 +15,7 @@ import com.akalea.sshtools.domain.connection.SftpConnection;
 import com.akalea.sshtools.domain.connection.SshConnection;
 import com.akalea.sshtools.domain.connection.SshExecConnection;
 import com.akalea.sshtools.domain.connection.SshShellConnection;
+import com.akalea.sshtools.domain.connection.SshTunnel;
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -45,14 +46,14 @@ public class SshSession {
             if (!StringUtils.isEmpty(server.getPrivateKeyFile()))
                 return sshSession(
                     server.getUsername(),
-                    server.getHostname(),
+                    server.getHost(),
                     server.getPort(),
                     server.getPrivateKeyFile(),
                     server.getPassphrase());
             else
                 return sshSession(
                     server.getUsername(),
-                    server.getHostname(),
+                    server.getHost(),
                     server.getPort(),
                     server.getPrivateKey(),
                     server.getPublicKey(),
@@ -60,7 +61,7 @@ public class SshSession {
         } else {
             return sshSession(
                 server.getUsername(),
-                server.getHostname(),
+                server.getHost(),
                 server.getPort(),
                 server.getPassword());
         }
@@ -175,6 +176,15 @@ public class SshSession {
             if (!keepAlive)
                 disconnect();
         }
+    }
+
+    public SshTunnel tunnel(String remoteHost, int remotePort) {
+        assertConnected();
+        SshTunnel tunnel =
+            (SshTunnel) SshConnection
+                .of(SshConnectionType.tunnel)
+                .apply(session);
+        return tunnel(remoteHost, remotePort);
     }
 
     private List<SshCommand> withSourceProfiles(List<SshCommand> originalCommands) {

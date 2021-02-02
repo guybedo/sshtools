@@ -1,13 +1,16 @@
 package com.akalea.sshtools.domain.session;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.StringUtils;
 
-public class SshServerInfo {
+public class SshServerInfo implements Serializable {
+
+    private String host;
+    private int    port = 22;
 
     private String username;
     private String password;
-    private String hostname;
-    private int    port = 22;
 
     private String privateKey;
     private String publicKey;
@@ -18,13 +21,13 @@ public class SshServerInfo {
     public SshServerInfo() {
 
     }
-    
+
     public SshServerInfo(
         String username,
         String hostname) {
         super();
         this.username = username;
-        this.hostname = hostname;
+        this.host = hostname;
     }
 
     public SshServerInfo(
@@ -34,7 +37,7 @@ public class SshServerInfo {
         String passphrase) {
         super();
         this.username = username;
-        this.hostname = hostname;
+        this.host = hostname;
         this.privateKeyFile = privateKeyFile;
         this.passphrase = passphrase;
     }
@@ -43,7 +46,7 @@ public class SshServerInfo {
         super();
         this.username = username;
         this.password = password;
-        this.hostname = hostname;
+        this.host = hostname;
     }
 
     public boolean isPasskeyDefined() {
@@ -59,12 +62,12 @@ public class SshServerInfo {
         return this;
     }
 
-    public String getHostname() {
-        return hostname;
+    public String getHost() {
+        return host;
     }
 
-    public SshServerInfo setHostname(String hostname) {
-        this.hostname = hostname;
+    public SshServerInfo setHost(String hostname) {
+        this.host = hostname;
         return this;
     }
 
