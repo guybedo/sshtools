@@ -1,23 +1,19 @@
 package com.akalea.sshtools.domain.session;
 
+import java.io.File;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.akalea.sshtools.domain.command.SftpCommand;
 import com.akalea.sshtools.domain.command.SshCommand;
 import com.akalea.sshtools.domain.command.SshCommandExecution;
-import com.akalea.sshtools.domain.connection.SftpConnection;
 import com.akalea.sshtools.domain.connection.SshConnection;
-import com.akalea.sshtools.domain.connection.SshExecConnection;
-import com.akalea.sshtools.domain.connection.SshShellConnection;
 import com.akalea.sshtools.domain.connection.SshTunnel;
 import com.google.common.collect.Lists;
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -42,29 +38,49 @@ public class SshSession {
     }
 
     public static SshSession ssh(SshServerInfo server) {
-        if (server.isPasskeyDefined()) {
-            if (!StringUtils.isEmpty(server.getPrivateKeyFile()))
-                return sshSession(
+        SshSession session = null;
+        if (server.isUserPasswordAuth()) {
+            session =
+                sshSession(
                     server.getUsername(),
                     server.getHost(),
                     server.getPort(),
-                    server.getPrivateKeyFile(),
-                    server.getPassphrase());
-            else
-                return sshSession(
-                    server.getUsername(),
-                    server.getHost(),
-                    server.getPort(),
-                    server.getPrivateKey(),
-                    server.getPublicKey(),
-                    server.getPassphrase());
+                    server.getPassword());
         } else {
-            return sshSession(
-                server.getUsername(),
-                server.getHost(),
-                server.getPort(),
-                server.getPassword());
+            String privateKey =
+                Optional
+                    .ofNullable(server.getPrivateKey())
+                    .orElseGet(() -> {
+                        try {
+                            return FileUtils.readFileToString(
+                                new File(server.getPrivateKeyFile()),
+                                Charset.defaultCharset());
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error reading private key file", e);
+                        }
+                    });
+            String publicKey =
+                Optional
+                    .ofNullable(server.getPrivateKey())
+                    .orElseGet(() -> {
+                        try {
+                            return FileUtils.readFileToString(
+                                new File(server.getPublicKeyFile()),
+                                Charset.defaultCharset());
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error reading public key file", e);
+                        }
+                    });
+            session =
+                sshSession(
+                    server.getUsername(),
+                    server.getHost(),
+                    server.getPort(),
+                    privateKey,
+                    publicKey,
+                    server.getPassphrase());
         }
+        return session;
     }
 
     private static SshSession sshSession(
@@ -184,7 +200,7 @@ public class SshSession {
             (SshTunnel) SshConnection
                 .of(SshConnectionType.tunnel)
                 .apply(session);
-        return tunnel(remoteHost, remotePort);
+        return tunnel.setupTunnel(remoteHost, remotePort);
     }
 
     private List<SshCommand> withSourceProfiles(List<SshCommand> originalCommands) {

@@ -13,9 +13,11 @@ public class SshServerInfo implements Serializable {
     private String password;
 
     private String privateKey;
-    private String publicKey;
-
     private String privateKeyFile;
+
+    private String publicKey;
+    private String publicKeyFile;
+
     private String passphrase;
 
     public SshServerInfo() {
@@ -51,6 +53,11 @@ public class SshServerInfo implements Serializable {
 
     public boolean isPasskeyDefined() {
         return !StringUtils.isEmpty(privateKeyFile) || !StringUtils.isEmpty(privateKey);
+    }
+
+    public boolean isUserPasswordAuth() {
+        return StringUtils.stripToNull(this.username) != null
+            && StringUtils.stripToNull(this.password) != null;
     }
 
     public String getUsername() {
@@ -122,6 +129,15 @@ public class SshServerInfo implements Serializable {
 
     public SshServerInfo setPublicKey(String publicKey) {
         this.publicKey = publicKey;
+        return this;
+    }
+
+    public String getPublicKeyFile() {
+        return publicKeyFile;
+    }
+
+    public SshServerInfo setPublicKeyFile(String publicKeyFile) {
+        this.publicKeyFile = publicKeyFile;
         return this;
     }
 
