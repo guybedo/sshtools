@@ -61,15 +61,31 @@ public class SshSession {
                     });
             String publicKey =
                 Optional
-                    .ofNullable(server.getPrivateKey())
+                    .ofNullable(server.getPublicKey())
                     .orElseGet(() -> {
-                        try {
-                            return FileUtils.readFileToString(
-                                new File(server.getPublicKeyFile()),
-                                Charset.defaultCharset());
-                        } catch (Exception e) {
-                            throw new RuntimeException("Error reading public key file", e);
-                        }
+
+                        String publicKeyFilename =
+                            Optional
+                                .ofNullable(server.getPublicKeyFile())
+                                .orElse(String.format("%s.pub", server.getPrivateKeyFile()));
+                        File publicKeyFile = new File(publicKeyFilename);
+                        return Optional
+                            .ofNullable(publicKeyFile)
+                            .filter(f -> f.exists())
+                            .map(
+                                f -> {
+                                    try {
+                                        return FileUtils.readFileToString(
+                                            f,
+                                            Charset.defaultCharset());
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(
+                                            "Error reading public key file",
+                                            e);
+                                    }
+                                })
+                            .orElse(null);
+
                     });
             session =
                 sshSession(
@@ -113,11 +129,15 @@ public class SshSession {
                     .ofNullable(passphrase)
                     .map(p -> p.getBytes(Charset.forName("UTF-8")))
                     .orElse(null);
-            jsch.addIdentity(
-                username,
-                privateKey.getBytes(Charset.forName("UTF-8")),
-                publicKey.getBytes(Charset.forName("UTF-8")),
-                passBytes);
+
+            if (!StringUtils.isEmpty(publicKey))
+                jsch.addIdentity(
+                    username,
+                    privateKey.getBytes(Charset.forName("UTF-8")),
+                    publicKey.getBytes(Charset.forName("UTF-8")),
+                    passBytes);
+            else
+                jsch.addIdentity(privateKey, passBytes);
             Session session = jsch.getSession(username, hostname, port);
             return new SshSession(session);
         } catch (Exception e) {
