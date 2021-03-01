@@ -1,6 +1,7 @@
 package com.akalea.sshtools.example;
 
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.process.SshProcesses;
 
 public class MoveFile {
@@ -15,7 +16,7 @@ public class MoveFile {
         SshProcesses
             .files()
             .moveFile(
-                serverInfo,
+                new SshSessionConfiguration().setServer(serverInfo),
                 "/home/user/test.txt",
                 "/home/user/test2.txt",
                 true);

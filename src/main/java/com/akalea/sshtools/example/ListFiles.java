@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.FileInfo;
 import com.akalea.sshtools.helper.CommandHelper;
 import com.akalea.sshtools.service.SshService;
@@ -21,7 +22,7 @@ public class ListFiles {
                 null);
         SshService
             .ssh(
-                serverInfo,
+                new SshSessionConfiguration().setServer(serverInfo),
                 Lists.newArrayList(CommandHelper.files().listFiles("/home/user")),
                 false,
                 false)

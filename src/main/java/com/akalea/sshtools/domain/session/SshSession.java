@@ -1,12 +1,17 @@
 package com.akalea.sshtools.domain.session;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.akalea.sshtools.domain.command.SshCommand;
@@ -33,19 +38,11 @@ public class SshSession {
         strictHostKeyChecking(strictHostKeyChecking);
     }
 
-    public static SshSession of(SshServerInfo server) {
-        return ssh(server);
-    }
-
-    public static SshSession ssh(SshServerInfo server) {
+    public static SshSession of(SshSessionConfiguration configuration) {
+        SshServerInfo server = configuration.getServer();
         SshSession session = null;
         if (server.isUserPasswordAuth()) {
-            session =
-                sshSession(
-                    server.getUsername(),
-                    server.getHost(),
-                    server.getPort(),
-                    server.getPassword());
+            session = sshSessionWithUserPassword(configuration);
         } else {
             String privateKey =
                 Optional
@@ -89,9 +86,7 @@ public class SshSession {
                     });
             session =
                 sshSession(
-                    server.getUsername(),
-                    server.getHost(),
-                    server.getPort(),
+                    configuration,
                     privateKey,
                     publicKey,
                     server.getPassphrase());
@@ -100,15 +95,18 @@ public class SshSession {
     }
 
     private static SshSession sshSession(
-        String username,
-        String hostname,
-        int port,
+        SshSessionConfiguration configuration,
         String privateKeyFile,
         String passphrase) {
         try {
             JSch jsch = new JSch();
+            setKnownHosts(jsch, configuration);
             jsch.addIdentity(privateKeyFile, passphrase);
-            Session session = jsch.getSession(username, hostname, port);
+            Session session =
+                jsch.getSession(
+                    configuration.getServer().getUsername(),
+                    configuration.getServer().getHost(),
+                    configuration.getServer().getPort());
             return new SshSession(session);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -116,14 +114,13 @@ public class SshSession {
     }
 
     private static SshSession sshSession(
-        String username,
-        String hostname,
-        int port,
+        SshSessionConfiguration configuration,
         String privateKey,
         String publicKey,
         String passphrase) {
         try {
             JSch jsch = new JSch();
+            setKnownHosts(jsch, configuration);
             byte[] passBytes =
                 Optional
                     .ofNullable(passphrase)
@@ -132,32 +129,57 @@ public class SshSession {
 
             if (!StringUtils.isEmpty(publicKey))
                 jsch.addIdentity(
-                    username,
+                    configuration.getServer().getUsername(),
                     privateKey.getBytes(Charset.forName("UTF-8")),
                     publicKey.getBytes(Charset.forName("UTF-8")),
                     passBytes);
             else
                 jsch.addIdentity(privateKey, passBytes);
-            Session session = jsch.getSession(username, hostname, port);
+            Session session =
+                jsch.getSession(
+                    configuration.getServer().getUsername(),
+                    configuration.getServer().getHost(),
+                    configuration.getServer().getPort());
             return new SshSession(session);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static SshSession sshSession(
-        String username,
-        String hostname,
-        int port,
-        String password) {
+    private static SshSession sshSessionWithUserPassword(SshSessionConfiguration configuration) {
         try {
             JSch jsch = new JSch();
-            Session session = jsch.getSession(username, hostname, port);
-            session.setPassword(password);
+            Session session =
+                jsch.getSession(
+                    configuration.getServer().getUsername(),
+                    configuration.getServer().getHost(),
+                    configuration.getServer().getPort());
+            session.setPassword(configuration.getServer().getPassword());
+            setKnownHosts(jsch, configuration);
             return new SshSession(session);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void setKnownHosts(JSch jsch, SshSessionConfiguration configuration) {
+        Optional
+            .ofNullable(configuration.getKnownHosts())
+            .ifPresent(h -> {
+                try {
+                    jsch.setKnownHosts(
+                        IOUtils.toInputStream(
+                            StringUtils.join(
+                                h
+                                    .entrySet()
+                                    .stream()
+                                    .map(e -> String.format("%s\t%s", e.getKey(), e.getValue()))
+                                    .collect(Collectors.toList()),
+                                "\r")));
+                } catch (Exception e) {
+                    throw new RuntimeException("Could not set known hosts", e);
+                }
+            });
     }
 
     public SshSession strictHostKeyChecking(boolean enabled) {
@@ -278,6 +300,15 @@ public class SshSession {
 
     public boolean isConnected() {
         return session.isConnected();
+    }
+
+    public SshSession setTimeout(int timeout) {
+        try {
+            session.setTimeout(timeout);
+            return this;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not set session timeout");
+        }
     }
 
     public void sendKeepAliveMsg() throws Exception {

@@ -60,6 +60,11 @@ public class SshServerInfo implements Serializable {
             && StringUtils.stripToNull(this.password) != null;
     }
 
+    @Override
+    public String toString() {
+        return "SshServerInfo [host=" + host + ", port=" + port + ", username=" + username + "]";
+    }
+
     public String getUsername() {
         return username;
     }

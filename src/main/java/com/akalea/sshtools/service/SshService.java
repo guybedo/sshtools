@@ -6,45 +6,45 @@ import com.akalea.sshtools.domain.command.SftpCommand;
 import com.akalea.sshtools.domain.command.SshCommand;
 import com.akalea.sshtools.domain.command.SshCommandExecution;
 import com.akalea.sshtools.domain.connection.SshTunnel;
-import com.akalea.sshtools.domain.session.SshServerInfo;
 import com.akalea.sshtools.domain.session.SshSession;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 
 public class SshService {
 
     public static List<SshCommandExecution> ssh(
-        SshServerInfo server,
+        SshSessionConfiguration configuration,
         List<SshCommand> commands,
         boolean failOnError,
         boolean sourceProfile) {
         return SshSession
-            .of(server)
+            .of(configuration)
             .sshExec(commands, sourceProfile, failOnError, false);
     }
 
     public static List<SshCommandExecution> shell(
-        SshServerInfo server,
+        SshSessionConfiguration configuration,
         List<SshCommand> commands,
         boolean failOnError) {
         return SshSession
-            .of(server)
+            .of(configuration)
             .sshShell(commands, failOnError, false);
     }
 
     public static List<SshCommandExecution> sftp(
-        SshServerInfo server,
+        SshSessionConfiguration configuration,
         List<SftpCommand> commands,
         boolean failOnError) {
         return SshSession
-            .of(server)
+            .of(configuration)
             .sftp((List<SshCommand>) (List) commands, failOnError, false);
     }
 
     public static SshTunnel tunnel(
-        SshServerInfo server,
+        SshSessionConfiguration configuration,
         String remoteHost,
         int remotePort) {
         return SshSession
-            .of(server)
+            .of(configuration)
             .tunnel(remoteHost, remotePort);
     }
 }

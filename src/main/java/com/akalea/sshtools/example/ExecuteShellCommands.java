@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.akalea.sshtools.domain.command.SshCommand;
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.service.SshService;
 import com.google.common.collect.Lists;
 
@@ -24,7 +25,7 @@ public class ExecuteShellCommands {
                 new SshCommand("cd /data"),
                 new SshCommand("ls -l"));
         SshService
-            .shell(serverInfo, commands, false)
+            .shell(new SshSessionConfiguration().setServer(serverInfo), commands, false)
             .stream()
             .forEach(execution -> {
                 System.out.println(StringUtils.join(execution.getStdout(), "\n"));

@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.akalea.sshtools.domain.command.SftpCommand;
 import com.akalea.sshtools.domain.command.SftpCommand.SftpCommandType;
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.service.SshService;
 import com.google.common.collect.Lists;
 
@@ -27,7 +28,7 @@ public class ExecuteSftpCommands {
                 new SftpCommand(SftpCommandType.put, localFile, remoteFile),
                 new SftpCommand(SftpCommandType.get, remoteFile, localCopy));
         SshService
-            .sftp(serverInfo, commands, false)
+            .sftp(new SshSessionConfiguration().setServer(serverInfo), commands, false)
             .stream()
             .forEach(execution -> {
                 System.out.println(

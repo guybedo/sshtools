@@ -1,6 +1,7 @@
 package com.akalea.sshtools.example;
 
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.process.SshProcesses;
 
 public class DeleteFile {
@@ -12,9 +13,10 @@ public class DeleteFile {
                 "localhost",
                 "/home/user/.ssh/id_rsa",
                 null);
-        SshProcesses.files()
+        SshProcesses
+            .files()
             .deleteFile(
-                serverInfo,
+                new SshSessionConfiguration().setServer(serverInfo),
                 "/home/user/test.txt",
                 true,
                 true);

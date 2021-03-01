@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.ProcessInfo;
 import com.akalea.sshtools.helper.CommandHelper;
 import com.akalea.sshtools.service.SshService;
@@ -23,7 +24,7 @@ public class FindProcesses {
         String processName = "java";
         SshService
             .ssh(
-                serverInfo,
+                new SshSessionConfiguration().setServer(serverInfo),
                 Lists.newArrayList(CommandHelper.processes().findProcesses(processName)),
                 false,
                 false)

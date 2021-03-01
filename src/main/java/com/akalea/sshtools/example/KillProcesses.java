@@ -3,6 +3,7 @@ package com.akalea.sshtools.example;
 import java.util.List;
 
 import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.ProcessInfo;
 import com.akalea.sshtools.process.SshProcesses;
 
@@ -18,13 +19,13 @@ public class KillProcesses {
 
         String processName = "java";
         List<ProcessInfo> processes =
-            SshProcesses.processes().findProcessesByName(serverInfo, processName);
+            SshProcesses.processes().findProcessesByName(new SshSessionConfiguration().setServer(serverInfo), processName);
         System.out.println(String.format("Found %d processes", processes.size()));
 
         System.out.println("Killing them all");
-        SshProcesses.processes().killProcessesByName(serverInfo, processName, 30, 1);
+        SshProcesses.processes().killProcessesByName(new SshSessionConfiguration().setServer(serverInfo), processName, 30, 1);
 
-        processes = SshProcesses.processes().findProcessesByName(serverInfo, processName);
+        processes = SshProcesses.processes().findProcessesByName(new SshSessionConfiguration().setServer(serverInfo), processName);
         System.out.println(String.format("Remains %d processes", processes.size()));
 
     }

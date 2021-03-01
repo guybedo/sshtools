@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.akalea.sshtools.domain.session.SshServerInfo;
+import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.FileInfo;
 import com.akalea.sshtools.domain.system.ProcessInfo;
 import com.akalea.sshtools.helper.CommandHelper;
@@ -20,23 +20,12 @@ public class SshProcesses {
     }
 
     public static class Processes {
-        public List<ProcessInfo> findProcessesByName(SshServerInfo serverInfo, String name) {
+        public List<ProcessInfo> findProcessesByName(
+            SshSessionConfiguration configuration,
+            String name) {
             return SshService
                 .ssh(
-                    serverInfo,
-                    Lists.newArrayList(CommandHelper.processes().findProcesses(name)),
-                    false,
-                    false)
-                .stream()
-                .findFirst()
-                .map(e -> (List<ProcessInfo>) e.getResult())
-                .orElse(Lists.newArrayList());
-        }
-        
-        public List<ProcessInfo> findProcessesByName(SshServerInfo serverInfo, Pattern name) {
-            return SshService
-                .ssh(
-                    serverInfo,
+                    configuration,
                     Lists.newArrayList(CommandHelper.processes().findProcesses(name)),
                     false,
                     false)
@@ -46,10 +35,27 @@ public class SshProcesses {
                 .orElse(Lists.newArrayList());
         }
 
-        public List<ProcessInfo> findProcessesByPid(SshServerInfo serverInfo, List<String> pids) {
+        public List<ProcessInfo> findProcessesByName(
+            SshSessionConfiguration configuration,
+            Pattern name) {
             return SshService
                 .ssh(
-                    serverInfo,
+                    configuration,
+                    Lists.newArrayList(CommandHelper.processes().findProcesses(name)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> (List<ProcessInfo>) e.getResult())
+                .orElse(Lists.newArrayList());
+        }
+
+        public List<ProcessInfo> findProcessesByPid(
+            SshSessionConfiguration configuration,
+            List<String> pids) {
+            return SshService
+                .ssh(
+                    configuration,
                     Lists.newArrayList(CommandHelper.processes().findProcesses(pids)),
                     false,
                     false)
@@ -60,11 +66,11 @@ public class SshProcesses {
         }
 
         public void killProcessesByName(
-            SshServerInfo serverInfo,
+            SshSessionConfiguration configuration,
             String name,
             int gracefulPeriodSec,
             int checkIntervalMsec) {
-            List<ProcessInfo> processes = findProcessesByName(serverInfo, name);
+            List<ProcessInfo> processes = findProcessesByName(configuration, name);
             if (processes.size() == 0)
                 return;
 
@@ -73,39 +79,39 @@ public class SshProcesses {
                     .stream()
                     .map(p -> p.getPid())
                     .collect(Collectors.toList());
-            killProcessesByPid(serverInfo, pids, gracefulPeriodSec, checkIntervalMsec);
+            killProcessesByPid(configuration, pids, gracefulPeriodSec, checkIntervalMsec);
         }
 
         public void killProcessesByPid(
-            SshServerInfo serverInfo,
+            SshSessionConfiguration configuration,
             List<String> pids,
             int gracefulPeriodSec,
             int checkIntervalMsec) {
-            sigintProcesses(serverInfo, pids);
+            sigintProcesses(configuration, pids);
 
-            Supplier<Boolean> condition = () -> findProcessesByPid(serverInfo, pids).size() == 0;
+            Supplier<Boolean> condition = () -> findProcessesByPid(configuration, pids).size() == 0;
             Boolean result =
                 ThreadUtils.waitForCondition(
                     condition,
                     gracefulPeriodSec,
                     checkIntervalMsec);
             if (!result)
-                sigkillProcesses(serverInfo, pids);
+                sigkillProcesses(configuration, pids);
         }
 
-        private void sigintProcesses(SshServerInfo serverInfo, List<String> pids) {
+        private void sigintProcesses(SshSessionConfiguration configuration, List<String> pids) {
             SshService
                 .ssh(
-                    serverInfo,
+                    configuration,
                     Lists.newArrayList(CommandHelper.processes().sigintProcesses(pids)),
                     false,
                     false);
         }
 
-        private void sigkillProcesses(SshServerInfo serverInfo, List<String> pids) {
+        private void sigkillProcesses(SshSessionConfiguration configuration, List<String> pids) {
             SshService
                 .ssh(
-                    serverInfo,
+                    configuration,
                     Lists.newArrayList(CommandHelper.processes().sigkillProcesses(pids)),
                     false,
                     false);
@@ -117,10 +123,10 @@ public class SshProcesses {
     }
 
     public static class Files {
-        public List<FileInfo> listFiles(SshServerInfo serverInfo, String path) {
+        public List<FileInfo> listFiles(SshSessionConfiguration configuration, String path) {
             return SshService
                 .ssh(
-                    serverInfo,
+                    configuration,
                     Lists.newArrayList(CommandHelper.files().listFiles(path)),
                     false,
                     false)
@@ -131,37 +137,37 @@ public class SshProcesses {
         }
 
         public void copyFile(
-            SshServerInfo serverInfo,
+            SshSessionConfiguration configuration,
             String src,
             String dst,
             boolean force,
             boolean recursive) {
             SshService.ssh(
-                serverInfo,
+                configuration,
                 Lists.newArrayList(CommandHelper.files().copyFile(src, dst, force, recursive)),
                 false,
                 false);
         }
 
         public void moveFile(
-            SshServerInfo serverInfo,
+            SshSessionConfiguration configuration,
             String src,
             String dst,
             boolean force) {
             SshService.ssh(
-                serverInfo,
+                configuration,
                 Lists.newArrayList(CommandHelper.files().moveFile(src, dst, force)),
                 false,
                 false);
         }
 
         public void deleteFile(
-            SshServerInfo serverInfo,
+            SshSessionConfiguration configuration,
             String path,
             boolean force,
             boolean recursive) {
             SshService.ssh(
-                serverInfo,
+                configuration,
                 Lists.newArrayList(
                     CommandHelper.files().deleteFile(path, force, recursive)),
                 false,
