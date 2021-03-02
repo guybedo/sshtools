@@ -2,6 +2,7 @@ package com.akalea.sshtools.helper;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -142,6 +143,45 @@ public class CommandHelper {
     }
 
     public static class Files {
+
+        public SshCommand getAvailableDiskSpace(String path) {
+            Pattern pattern = Pattern.compile(".*([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+%).*");
+            return new SshCommand<Double>(
+                String.format(
+                    "df -k %s | tail -1",
+                    path),
+                null,
+                new Function<List<String>, Double>() {
+
+                    @Override
+                    public Double apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return null;
+                        Matcher matcher = pattern.matcher(stdouts.get(0));
+                        matcher.matches();
+                        return Double.parseDouble(matcher.group(3));
+                    }
+                });
+        }
+
+        public SshCommand getAvailableDiskSpacePercentage(String path) {
+            Pattern pattern = Pattern.compile(".*([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+%).*");
+            return new SshCommand<Double>(
+                String.format(
+                    "df -k %s | tail -1",
+                    path),
+                null,
+                new Function<List<String>, Double>() {
+
+                    @Override
+                    public Double apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return null;
+                        Matcher matcher = pattern.matcher(stdouts.get(0));
+                        return Double.parseDouble(matcher.group(4).replaceAll("%", ""));
+                    }
+                });
+        }
 
         public SshCommand listFiles(String path) {
             return new SshCommand<List<FileInfo>>(

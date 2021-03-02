@@ -161,6 +161,35 @@ public class SshProcesses {
     }
 
     public static class Files {
+
+        public Double getAvailableDiskSpace(SshSessionConfiguration configuration, String path) {
+            return SshService
+                .ssh(
+                    configuration,
+                    Lists.newArrayList(CommandHelper.files().getAvailableDiskSpace(path)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> (Double) e.getResult())
+                .orElse(null);
+        }
+
+        public Double getAvailableDiskSpacePercentage(
+            SshSessionConfiguration configuration,
+            String path) {
+            return SshService
+                .ssh(
+                    configuration,
+                    Lists.newArrayList(CommandHelper.files().getAvailableDiskSpacePercentage(path)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> (Double) e.getResult())
+                .orElse(null);
+        }
+
         public List<FileInfo> listFiles(SshSessionConfiguration configuration, String path) {
             return SshService
                 .ssh(
