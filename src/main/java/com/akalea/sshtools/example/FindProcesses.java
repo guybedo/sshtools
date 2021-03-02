@@ -8,6 +8,7 @@ import com.akalea.sshtools.domain.session.SshServerInfo;
 import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.ProcessInfo;
 import com.akalea.sshtools.helper.CommandHelper;
+import com.akalea.sshtools.process.SshProcesses;
 import com.akalea.sshtools.service.SshService;
 import com.google.common.collect.Lists;
 
@@ -22,31 +23,13 @@ public class FindProcesses {
                 null);
 
         String processName = "java";
-        SshService
-            .ssh(
-                new SshSessionConfiguration().setServer(serverInfo),
-                Lists.newArrayList(CommandHelper.processes().findProcesses(processName)),
-                false,
-                false)
-            .stream()
-            .forEach(execution -> {
-                if (execution.getStderr() != null && !execution.getStderr().isEmpty())
-                    System.out.println(StringUtils.join(execution.getStderr(), "\n"));
-                else {
-                    List<ProcessInfo> processes = ((List<ProcessInfo>) execution.getResult());
-                    System.out.println(
-                        String.format(
-                            "Found %d processes %s",
-                            processes.size(),
-                            processes
-                                .stream()
-                                .map(p -> p.toString())
-                                .reduce((a, b) -> String.format("%s,%s", a, b))
-                                .get()));
-                }
-
-            });
-        ;
+        List<ProcessInfo> processes =
+            SshProcesses
+                .processes()
+                .findProcessesByName(
+                    new SshSessionConfiguration().setServer(serverInfo),
+                    processName);
+        System.out.println(String.format("Found %d processes", processes.size()));
 
     }
 }

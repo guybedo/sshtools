@@ -19,13 +19,28 @@ public class KillProcesses {
 
         String processName = "java";
         List<ProcessInfo> processes =
-            SshProcesses.processes().findProcessesByName(new SshSessionConfiguration().setServer(serverInfo), processName);
+            SshProcesses
+                .processes()
+                .findProcessesByName(
+                    new SshSessionConfiguration().setServer(serverInfo),
+                    processName);
         System.out.println(String.format("Found %d processes", processes.size()));
 
         System.out.println("Killing them all");
-        SshProcesses.processes().killProcessesByName(new SshSessionConfiguration().setServer(serverInfo), processName, 30, 1);
+        SshProcesses
+            .processes()
+            .killProcessesByName(
+                new SshSessionConfiguration().setServer(serverInfo),
+                processName,
+                30,
+                1);
 
-        processes = SshProcesses.processes().findProcessesByName(new SshSessionConfiguration().setServer(serverInfo), processName);
+        processes =
+            SshProcesses
+                .processes()
+                .findProcessesByName(
+                    new SshSessionConfiguration().setServer(serverInfo),
+                    processName);
         System.out.println(String.format("Remains %d processes", processes.size()));
 
     }
