@@ -45,7 +45,7 @@ public class CommandHelper {
         public SshCommand getProcessCpuUsage(String commandPattern) {
             return new SshCommand<Double>(
                 String.format(
-                    "top -b -n 2 -d 0.2 -p $(pgrep -f %s) | tail -2 | head -1 | awk '{print $9}'",
+                    "top -b -n 2 -d 0.2 -p $(pgrep -f %s | head -1) | tail -2 | head -1 | awk '{print $9}'",
                     commandPattern),
                 null,
                 new Function<List<String>, Double>() {
