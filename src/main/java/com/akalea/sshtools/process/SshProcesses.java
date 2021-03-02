@@ -5,6 +5,9 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.akalea.sshtools.domain.session.SshServerInfo;
 import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.FileInfo;
 import com.akalea.sshtools.domain.system.ProcessInfo;
@@ -20,6 +23,41 @@ public class SshProcesses {
     }
 
     public static class Processes {
+
+        public Double getProcessCpuUsage(SshSessionConfiguration configuration, Integer pid) {
+            return SshService
+                .ssh(
+                    configuration,
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .getProcessCpuUsage(pid)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> ((Double) e.getResult()))
+                .orElse(null);
+        }
+
+        public Double getProcessCpuUsage(
+            SshSessionConfiguration configuration,
+            String commandPattern) {
+            return SshService
+                .ssh(
+                    configuration,
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .getProcessCpuUsage(commandPattern)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> ((Double) e.getResult()))
+                .orElse(null);
+        }
+
         public List<ProcessInfo> findProcessesByName(
             SshSessionConfiguration configuration,
             String name) {

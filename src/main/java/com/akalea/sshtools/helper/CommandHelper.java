@@ -24,6 +24,41 @@ public class CommandHelper {
     }
 
     public static class Processes {
+
+        public SshCommand getProcessCpuUsage(Integer pid) {
+            return new SshCommand<Double>(
+                String.format(
+                    "top -b -n 2 -d 0.2 -p %d | tail -2 | head -1 | awk '{print $9}'",
+                    pid),
+                null,
+                new Function<List<String>, Double>() {
+
+                    @Override
+                    public Double apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return null;
+                        return Double.parseDouble(stdouts.get(0));
+                    }
+                });
+        }
+
+        public SshCommand getProcessCpuUsage(String commandPattern) {
+            return new SshCommand<Double>(
+                String.format(
+                    "top -b -n 2 -d 0.2 -p $(pgrep -f %s) | tail -2 | head -1 | awk '{print $9}'",
+                    commandPattern),
+                null,
+                new Function<List<String>, Double>() {
+
+                    @Override
+                    public Double apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return null;
+                        return Double.parseDouble(stdouts.get(0));
+                    }
+                });
+        }
+
         public SshCommand findProcesses(String name) {
             return new SshCommand<List<ProcessInfo>>(
                 String.format("ps -eo pid,args | grep -v grep | grep \"%s\"", name),
