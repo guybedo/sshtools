@@ -280,7 +280,7 @@ public class SshProcesses {
 
     public static class MemInfo {
 
-        public Double getAvailableDiskSpace(SshSessionConfiguration configuration, String path) {
+        public Double getAvailableMemory(SshSessionConfiguration configuration, String path) {
             return SshService
                 .ssh(
                     configuration,
