@@ -64,7 +64,10 @@ public class SshProcesses {
             return SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.processes().findProcesses(name)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .findProcesses(name)),
                     false,
                     false)
                 .stream()
@@ -79,7 +82,10 @@ public class SshProcesses {
             return SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.processes().findProcesses(name)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .findProcesses(name)),
                     false,
                     false)
                 .stream()
@@ -94,7 +100,10 @@ public class SshProcesses {
             return SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.processes().findProcesses(pids)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .findProcesses(pids)),
                     false,
                     false)
                 .stream()
@@ -141,7 +150,10 @@ public class SshProcesses {
             SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.processes().sigintProcesses(pids)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .sigintProcesses(pids)),
                     false,
                     false);
         }
@@ -150,7 +162,10 @@ public class SshProcesses {
             SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.processes().sigkillProcesses(pids)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .processes()
+                            .sigkillProcesses(pids)),
                     false,
                     false);
         }
@@ -166,7 +181,10 @@ public class SshProcesses {
             return SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.files().getAvailableDiskSpace(path)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .files()
+                            .getAvailableDiskSpace(path)),
                     false,
                     false)
                 .stream()
@@ -181,7 +199,10 @@ public class SshProcesses {
             return SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.files().getAvailableDiskSpacePercentage(path)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .files()
+                            .getAvailableDiskSpacePercentage(path)),
                     false,
                     false)
                 .stream()
@@ -194,7 +215,10 @@ public class SshProcesses {
             return SshService
                 .ssh(
                     configuration,
-                    Lists.newArrayList(CommandHelper.files().listFiles(path)),
+                    Lists.newArrayList(
+                        CommandHelper
+                            .files()
+                            .listFiles(path)),
                     false,
                     false)
                 .stream()
@@ -211,7 +235,10 @@ public class SshProcesses {
             boolean recursive) {
             SshService.ssh(
                 configuration,
-                Lists.newArrayList(CommandHelper.files().copyFile(src, dst, force, recursive)),
+                Lists.newArrayList(
+                    CommandHelper
+                        .files()
+                        .copyFile(src, dst, force, recursive)),
                 false,
                 false);
         }
@@ -223,7 +250,10 @@ public class SshProcesses {
             boolean force) {
             SshService.ssh(
                 configuration,
-                Lists.newArrayList(CommandHelper.files().moveFile(src, dst, force)),
+                Lists.newArrayList(
+                    CommandHelper
+                        .files()
+                        .moveFile(src, dst, force)),
                 false,
                 false);
         }
@@ -236,9 +266,34 @@ public class SshProcesses {
             SshService.ssh(
                 configuration,
                 Lists.newArrayList(
-                    CommandHelper.files().deleteFile(path, force, recursive)),
+                    CommandHelper
+                        .files()
+                        .deleteFile(path, force, recursive)),
                 false,
                 false);
+        }
+    }
+
+    public static MemInfo memInfo() {
+        return new MemInfo();
+    }
+
+    public static class MemInfo {
+
+        public Double getAvailableDiskSpace(SshSessionConfiguration configuration, String path) {
+            return SshService
+                .ssh(
+                    configuration,
+                    Lists.newArrayList(
+                        CommandHelper
+                            .memInfo()
+                            .getAvailableMemory(path)),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> (Double) e.getResult())
+                .orElse(null);
         }
     }
 }

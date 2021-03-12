@@ -50,7 +50,7 @@ public class SshSession {
                     configuration,
                     server.getPrivateKeyFile(),
                     server.getPassphrase());
-        } else if (!StringUtils.isEmpty(server.getPrivateKeyFile())) {
+        } else {
             String privateKey =
                 Optional
                     .ofNullable(server.getPrivateKey())
@@ -97,8 +97,7 @@ public class SshSession {
                     privateKey,
                     publicKey,
                     server.getPassphrase());
-        } else
-            throw new RuntimeException("Missing server info.");
+        }
         return session;
     }
 

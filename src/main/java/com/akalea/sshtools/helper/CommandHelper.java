@@ -20,6 +20,10 @@ public class CommandHelper {
         return new Files();
     }
 
+    public static MemInfo memInfo() {
+        return new MemInfo();
+    }
+
     public static Processes processes() {
         return new Processes();
     }
@@ -140,6 +144,25 @@ public class CommandHelper {
             return new SshCommand<List<ProcessInfo>>(
                 String.format("kill -9 %s", StringUtils.join(pids, " ")));
         }
+    }
+
+    public static class MemInfo {
+
+        public SshCommand getAvailableMemory(String path) {
+            return new SshCommand<Double>(
+                "cat /proc/meminfo | grep MemFree | awk '{ print $2 }'",
+                null,
+                new Function<List<String>, Double>() {
+
+                    @Override
+                    public Double apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return null;
+                        return Double.parseDouble(stdouts.get(0));
+                    }
+                });
+        }
+
     }
 
     public static class Files {
