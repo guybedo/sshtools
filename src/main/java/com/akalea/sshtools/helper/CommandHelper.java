@@ -148,17 +148,17 @@ public class CommandHelper {
 
     public static class MemInfo {
 
-        public SshCommand getAvailableMemory(String path) {
-            return new SshCommand<Double>(
+        public SshCommand getAvailableMemory() {
+            return new SshCommand<Integer>(
                 "cat /proc/meminfo | grep MemFree | awk '{ print $2 }'",
                 null,
-                new Function<List<String>, Double>() {
+                new Function<List<String>, Integer>() {
 
                     @Override
-                    public Double apply(List<String> stdouts) {
+                    public Integer apply(List<String> stdouts) {
                         if (stdouts == null || stdouts.size() == 0)
                             return null;
-                        return Double.parseDouble(stdouts.get(0));
+                        return Integer.parseInt(stdouts.get(0));
                     }
                 });
         }

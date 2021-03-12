@@ -280,19 +280,19 @@ public class SshProcesses {
 
     public static class MemInfo {
 
-        public Double getAvailableMemory(SshSessionConfiguration configuration, String path) {
+        public Integer getAvailableMemory(SshSessionConfiguration configuration) {
             return SshService
                 .ssh(
                     configuration,
                     Lists.newArrayList(
                         CommandHelper
                             .memInfo()
-                            .getAvailableMemory(path)),
+                            .getAvailableMemory()),
                     false,
                     false)
                 .stream()
                 .findFirst()
-                .map(e -> (Double) e.getResult())
+                .map(e -> (Integer) e.getResult())
                 .orElse(null);
         }
     }
