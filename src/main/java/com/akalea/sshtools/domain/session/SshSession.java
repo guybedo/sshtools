@@ -18,6 +18,7 @@ import com.akalea.sshtools.domain.command.SshCommand;
 import com.akalea.sshtools.domain.command.SshCommandExecution;
 import com.akalea.sshtools.domain.connection.SshConnection;
 import com.akalea.sshtools.domain.connection.SshTunnel;
+import com.akalea.sshtools.domain.exception.SshException;
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -149,7 +150,7 @@ public class SshSession {
                     configuration.getServer().getPort());
             return new SshSession(session);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw SshException.fromJSchException((JSchException) e);
         }
     }
 
