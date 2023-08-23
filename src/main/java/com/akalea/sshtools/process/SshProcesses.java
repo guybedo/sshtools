@@ -296,4 +296,27 @@ public class SshProcesses {
                 .orElse(null);
         }
     }
+    
+    public static CpuInfo cpuInfo() {
+        return new CpuInfo();
+    }
+
+    public static class CpuInfo {
+
+        public Float getCpuUsage(SshSessionConfiguration configuration) {
+            return SshService
+                .ssh(
+                    configuration,
+                    Lists.newArrayList(
+                        CommandHelper
+                            .cpuInfo()
+                            .getCpuUsage()),
+                    false,
+                    false)
+                .stream()
+                .findFirst()
+                .map(e -> (Float) e.getResult())
+                .orElse(null);
+        }
+    }
 }

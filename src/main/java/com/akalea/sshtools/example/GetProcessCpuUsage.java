@@ -4,7 +4,7 @@ import com.akalea.sshtools.domain.session.SshServerInfo;
 import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.process.SshProcesses;
 
-public class GetCpuUsage {
+public class GetProcessCpuUsage {
 
     public static void main(String[] args) {
         SshServerInfo serverInfo =
@@ -14,10 +14,13 @@ public class GetCpuUsage {
                 "/home/user/.ssh/id_rsa",
                 null);
 
-        Float result =
+        String processName = "mediation";
+        Double result =
             SshProcesses
-                .cpuInfo()
-                .getCpuUsage(new SshSessionConfiguration().setServer(serverInfo));
+                .processes()
+                .getProcessCpuUsage(
+                    new SshSessionConfiguration().setServer(serverInfo),
+                    processName);
         System.out.println(String.format("Cpu usage %f", result));
 
     }

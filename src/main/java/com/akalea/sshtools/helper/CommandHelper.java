@@ -23,6 +23,10 @@ public class CommandHelper {
     public static MemInfo memInfo() {
         return new MemInfo();
     }
+    
+    public static CpuInfo cpuInfo() {
+        return new CpuInfo();
+    }
 
     public static Processes processes() {
         return new Processes();
@@ -159,6 +163,25 @@ public class CommandHelper {
                         if (stdouts == null || stdouts.size() == 0)
                             return null;
                         return Integer.parseInt(stdouts.get(0));
+                    }
+                });
+        }
+
+    }
+    
+    public static class CpuInfo {
+
+        public SshCommand getCpuUsage() {
+            return new SshCommand<Float>(
+                "awk '{u=$2+$4; t=$2+$4+$5; if (NR==1){u1=u; t1=t;} else print ($2+$4-u1) * 100 / (t-t1) ; }' <(grep 'cpu ' /proc/stat) <(sleep 1;grep 'cpu ' /proc/stat)",
+                null,
+                new Function<List<String>, Float>() {
+
+                    @Override
+                    public Float apply(List<String> stdouts) {
+                        if (stdouts == null || stdouts.size() == 0)
+                            return null;
+                        return Float.parseFloat(stdouts.get(0));
                     }
                 });
         }
