@@ -44,21 +44,20 @@ public class SshSession {
         SshSession session = null;
         if (server.isUserPasswordAuth()) {
             session = sshSessionWithUserPassword(configuration);
-        } else if (!StringUtils.isEmpty(server.getPrivateKeyFile())
-            && StringUtils.isEmpty(server.getPublicKeyFile())) {
+        } else if (server.isPrivateKeyFile() && !server.isPublicKeyFile()) {
             session =
                 sshSession(
                     configuration,
-                    server.getPrivateKeyFile(),
-                    server.getPassphrase());
+                    server.getKey().getPrivateKeyFile(),
+                    server.getKey().getPassphrase());
         } else {
             String privateKey =
                 Optional
-                    .ofNullable(server.getPrivateKey())
+                    .ofNullable(server.getKey().getPrivateKey())
                     .orElseGet(() -> {
                         try {
                             return FileUtils.readFileToString(
-                                new File(server.getPrivateKeyFile()),
+                                new File(server.getKey().getPrivateKeyFile()),
                                 Charset.defaultCharset());
                         } catch (Exception e) {
                             throw new RuntimeException("Error reading private key file", e);
@@ -66,13 +65,14 @@ public class SshSession {
                     });
             String publicKey =
                 Optional
-                    .ofNullable(server.getPublicKey())
+                    .ofNullable(server.getKey().getPublicKey())
                     .orElseGet(() -> {
 
                         String publicKeyFilename =
                             Optional
-                                .ofNullable(server.getPublicKeyFile())
-                                .orElse(String.format("%s.pub", server.getPrivateKeyFile()));
+                                .ofNullable(server.getKey().getPublicKeyFile())
+                                .orElse(
+                                    String.format("%s.pub", server.getKey().getPrivateKeyFile()));
                         File publicKeyFile = new File(publicKeyFilename);
                         return Optional
                             .ofNullable(publicKeyFile)
@@ -97,7 +97,7 @@ public class SshSession {
                     configuration,
                     privateKey,
                     publicKey,
-                    server.getPassphrase());
+                    server.getKey().getPassphrase());
         }
         return session;
     }

@@ -12,13 +12,7 @@ public class SshServerInfo implements Serializable {
     private String username;
     private String password;
 
-    private String privateKey;
-    private String privateKeyFile;
-
-    private String publicKey;
-    private String publicKeyFile;
-
-    private String passphrase;
+    private SshKey key;
 
     public SshServerInfo() {
 
@@ -40,8 +34,10 @@ public class SshServerInfo implements Serializable {
         super();
         this.username = username;
         this.host = hostname;
-        this.privateKeyFile = privateKeyFile;
-        this.passphrase = passphrase;
+        this.key =
+            new SshKey()
+                .setPrivateKeyFile(privateKeyFile)
+                .setPassphrase(passphrase);
     }
 
     public SshServerInfo(String username, String password, String hostname) {
@@ -51,18 +47,65 @@ public class SshServerInfo implements Serializable {
         this.host = hostname;
     }
 
-    public boolean isPasskeyDefined() {
-        return !StringUtils.isEmpty(privateKeyFile) || !StringUtils.isEmpty(privateKey);
+    public boolean isPasskey() {
+        return this.key != null
+            &&
+            (!StringUtils.isEmpty(this.key.getPrivateKeyFile())
+                || !StringUtils.isEmpty(this.key.getPrivateKey()));
+    }
+
+    public boolean isPrivateKeyFile() {
+        return this.key != null && !StringUtils.isEmpty(this.key.getPrivateKeyFile());
+    }
+
+    public boolean isPublicKeyFile() {
+        return this.key != null && !StringUtils.isEmpty(this.key.getPublicKeyFile());
     }
 
     public boolean isUserPasswordAuth() {
-        return StringUtils.stripToNull(this.username) != null
+        return this.key != null
+            && StringUtils.stripToNull(this.username) != null
             && StringUtils.stripToNull(this.password) != null;
     }
 
     @Override
     public String toString() {
         return "SshServerInfo [host=" + host + ", port=" + port + ", username=" + username + "]";
+    }
+
+    public SshServerInfo setPrivateKey(String privateKey) {
+        if (this.key == null)
+            this.key = new SshKey();
+        key.setPrivateKey(privateKey);
+        return this;
+    }
+
+    public SshServerInfo setPrivateKeyFile(String privateKeyFile) {
+        if (this.key == null)
+            this.key = new SshKey();
+        key.setPrivateKeyFile(privateKeyFile);
+        return this;
+    }
+
+    public SshServerInfo setPublicKey(String publicKey) {
+        if (this.key == null)
+            this.key = new SshKey();
+        key.setPublicKey(publicKey);
+        return this;
+    }
+
+    public SshServerInfo setPublicKeyFile(String publicKeyFile) {
+        if (this.key == null)
+            this.key = new SshKey();
+        key.setPublicKeyFile(publicKeyFile);
+        return this;
+    }
+
+    public SshServerInfo setPassphrase(String passphrase) {
+        if (this.key == null)
+            this.key = new SshKey();
+        key.setPassphrase(passphrase);
+        return this;
     }
 
     public String getUsername() {
@@ -92,24 +135,6 @@ public class SshServerInfo implements Serializable {
         return this;
     }
 
-    public String getPrivateKeyFile() {
-        return privateKeyFile;
-    }
-
-    public SshServerInfo setPrivateKeyFile(String passkeyFile) {
-        this.privateKeyFile = passkeyFile;
-        return this;
-    }
-
-    public String getPassphrase() {
-        return passphrase;
-    }
-
-    public SshServerInfo setPassphrase(String passphrase) {
-        this.passphrase = passphrase;
-        return this;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -119,30 +144,12 @@ public class SshServerInfo implements Serializable {
         return this;
     }
 
-    public String getPrivateKey() {
-        return privateKey;
+    public SshKey getKey() {
+        return key;
     }
 
-    public SshServerInfo setPrivateKey(String passkey) {
-        this.privateKey = passkey;
-        return this;
-    }
-
-    public String getPublicKey() {
-        return publicKey;
-    }
-
-    public SshServerInfo setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
-        return this;
-    }
-
-    public String getPublicKeyFile() {
-        return publicKeyFile;
-    }
-
-    public SshServerInfo setPublicKeyFile(String publicKeyFile) {
-        this.publicKeyFile = publicKeyFile;
+    public SshServerInfo setKey(SshKey key) {
+        this.key = key;
         return this;
     }
 

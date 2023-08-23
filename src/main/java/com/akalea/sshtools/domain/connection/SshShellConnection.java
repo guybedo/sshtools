@@ -88,7 +88,7 @@ public class SshShellConnection extends SshConnection {
             getChannel().setOutputStream(ps);
             getChannel().connect();
             commandsInput.write(script.getBytes());
-            commandsInput.write("exit\n".getBytes());
+            commandsInput.write("\nexit\n".getBytes());
             while (!getChannel().isClosed())
                 Thread.currentThread().sleep(100);
             getChannel().disconnect();
