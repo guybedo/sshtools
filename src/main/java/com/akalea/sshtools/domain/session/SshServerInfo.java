@@ -54,11 +54,11 @@ public class SshServerInfo implements Serializable {
                 || !StringUtils.isEmpty(this.key.getPrivateKey()));
     }
 
-    public boolean isPrivateKeyFile() {
+    public boolean isPrivateKeyFileDefined() {
         return this.key != null && !StringUtils.isEmpty(this.key.getPrivateKeyFile());
     }
 
-    public boolean isPublicKeyFile() {
+    public boolean isPublicKeyFileDefined() {
         return this.key != null && !StringUtils.isEmpty(this.key.getPublicKeyFile());
     }
 

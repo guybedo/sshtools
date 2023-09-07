@@ -44,7 +44,7 @@ public class SshSession {
         SshSession session = null;
         if (server.isUserPasswordAuth()) {
             session = sshSessionWithUserPassword(configuration);
-        } else if (server.isPrivateKeyFile() && !server.isPublicKeyFile()) {
+        } else if (server.isPrivateKeyFileDefined() && !server.isPublicKeyFileDefined()) {
             session =
                 sshSession(
                     configuration,
