@@ -6,11 +6,36 @@
 
 	<groupId>com.akalea</groupId>
 	<artifactId>ssh-tools</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>ssh-tools</name>
-	<description>SSH Tools</description>
+	<description>SSH Tools for Java</description>
+	<url>http://github.com/guybedo/sshtools</url>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>
+				http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>guybedo</id>
+			<name>guybedo</name>
+			<email>guybedo@akalea.com</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/guybedo/sshtools.git</connection>
+		<developerConnection>scm:git:git@github.com:guybedo/sshtools.git</developerConnection>
+		<tag>HEAD</tag>
+		<url>http://github.com/guybedo/sshtools/tree/master</url>
+	</scm>
+	<issueManagement>
+		<system>Github</system>
+		<url>http://github.com/guybedo/sshtools</url>
+	</issueManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,11 +61,67 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.1</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.2.2</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.4.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<publishingServerId>central</publishingServerId>
+					<tokenAuth>true</tokenAuth>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
-
 
 		<dependency>
 			<groupId>com.jcraft</groupId>
@@ -79,8 +160,6 @@
 		</dependency>
 
 	</dependencies>
-
-
 
 
 </project>

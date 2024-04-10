@@ -18,7 +18,7 @@ import com.akalea.sshtools.domain.session.SshConnectionType;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.Session;
 
-public abstract class SshConnection {
+public abstract class SshConnection<T extends SshCommand, R extends SshCommandExecution> {
 
     private final static Logger logger = LoggerFactory.getLogger(SshConnection.class);
 
@@ -33,8 +33,8 @@ public abstract class SshConnection {
         this.type = type;
     }
 
-    public abstract List<SshCommandExecution> executeCommands(
-        List<SshCommand> commands,
+    public abstract List<R> executeCommands(
+        List<T> commands,
         boolean failOnError);
 
     protected void openChannel(boolean useCache) {

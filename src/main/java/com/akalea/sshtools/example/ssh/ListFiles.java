@@ -1,31 +1,29 @@
-package com.akalea.sshtools.example;
+package com.akalea.sshtools.example.ssh;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.akalea.sshtools.Ssh;
 import com.akalea.sshtools.domain.session.SshServerInfo;
-import com.akalea.sshtools.domain.session.SshSessionConfiguration;
 import com.akalea.sshtools.domain.system.FileInfo;
-import com.akalea.sshtools.helper.CommandHelper;
-import com.akalea.sshtools.process.SshProcesses;
-import com.akalea.sshtools.service.SshService;
-import com.google.common.collect.Lists;
 
 public class ListFiles {
 
     public static void main(String[] args) {
+        String username = "";
+        String host = "";
+        String privateKeyFilePath = "";
         SshServerInfo serverInfo =
             new SshServerInfo(
-                "login",
-                "localhost",
-                "/home/user/.ssh/id_rsa",
+                username,
+                host,
+                privateKeyFilePath,
                 null);
 
         List<FileInfo> files =
-            SshProcesses
-                .files()
-                .listFiles(new SshSessionConfiguration().setServer(serverInfo), "/home/user");
+                Ssh
+                .of(serverInfo)
+                .file()
+                .listFiles("/home/user");
         System.out.println(
             String.format(
                 "Found %d files %s",

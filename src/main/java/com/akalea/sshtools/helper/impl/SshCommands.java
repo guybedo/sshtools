@@ -1,4 +1,4 @@
-package com.akalea.sshtools.helper;
+package com.akalea.sshtools.helper.impl;
 
 import java.util.List;
 import java.util.function.Function;
@@ -14,7 +14,7 @@ import com.akalea.sshtools.domain.system.FileInfo;
 import com.akalea.sshtools.domain.system.ProcessInfo;
 import com.google.common.collect.Lists;
 
-public class CommandHelper {
+public class SshCommands {
 
     public static Files files() {
         return new Files();

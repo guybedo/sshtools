@@ -7,9 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.akalea.sshtools.domain.command.SftpCommand;
-import com.akalea.sshtools.domain.command.SshCommand;
+import com.akalea.sshtools.domain.command.SftpCommand.SftpCommandId;
 import com.akalea.sshtools.domain.command.SshCommandExecution;
-import com.akalea.sshtools.domain.command.SftpCommand.SftpCommandType;
 import com.akalea.sshtools.domain.session.SshConnectionType;
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelSftp;
@@ -17,30 +16,30 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class SftpConnection extends SshConnection {
+public class SftpConnection extends SshConnection<SftpCommand, SshCommandExecution> {
     private final static Logger logger = LoggerFactory.getLogger(SshConnection.class);
 
     public SftpConnection(Session session) {
         super(session, SshConnectionType.sftp);
     }
 
-    public SshCommandExecution executeCommand(SshCommand command) {
+    public SshCommandExecution executeCommand(SftpCommand command) {
         try {
             if (!getChannel().isConnected())
                 getChannel().connect();
             SftpCommand sftpCommand = (SftpCommand) command;
-            return getCommand(sftpCommand.getType()).apply(sftpCommand);
+            return getCommand(sftpCommand.getId()).apply(sftpCommand);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<SshCommandExecution> executeCommands(
-        List<SshCommand> commands,
+        List<SftpCommand> commands,
         boolean failOnError) {
         List<SshCommandExecution> executions = Lists.newArrayList();
         openChannel(false);
-        for (SshCommand sshCommand : commands) {
+        for (SftpCommand sshCommand : commands) {
             try {
                 SshCommandExecution execution = executeCommand(sshCommand);
                 executions.add(execution);
@@ -54,8 +53,8 @@ public class SftpConnection extends SshConnection {
         return executions;
     }
 
-    private Function<SftpCommand, SshCommandExecution> getCommand(SftpCommandType type) {
-        if (SftpCommandType.rm.equals(type))
+    private Function<SftpCommand, SshCommandExecution> getCommand(SftpCommandId type) {
+        if (SftpCommandId.rm.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -70,7 +69,7 @@ public class SftpConnection extends SshConnection {
                     return execution;
                 }
             };
-        if (SftpCommandType.rename.equals(type))
+        if (SftpCommandId.rename.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -86,7 +85,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.ls.equals(type))
+        if (SftpCommandId.ls.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -102,7 +101,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.get.equals(type))
+        if (SftpCommandId.get.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -118,7 +117,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.put.equals(type))
+        if (SftpCommandId.put.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -134,7 +133,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.quit.equals(type))
+        if (SftpCommandId.quit.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -145,7 +144,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.chgrp.equals(type))
+        if (SftpCommandId.chgrp.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -161,7 +160,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.chown.equals(type))
+        if (SftpCommandId.chown.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -177,7 +176,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.chmod.equals(type))
+        if (SftpCommandId.chmod.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -193,7 +192,7 @@ public class SftpConnection extends SshConnection {
                 }
             };
 
-        if (SftpCommandType.rmdir.equals(type))
+        if (SftpCommandId.rmdir.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -208,7 +207,7 @@ public class SftpConnection extends SshConnection {
                     return execution;
                 }
             };
-        if (SftpCommandType.mkdir.equals(type))
+        if (SftpCommandId.mkdir.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override
@@ -223,7 +222,7 @@ public class SftpConnection extends SshConnection {
                     return execution;
                 }
             };
-        if (SftpCommandType.pwd.equals(type))
+        if (SftpCommandId.pwd.equals(type))
             return new Function<SftpCommand, SshCommandExecution>() {
 
                 @Override

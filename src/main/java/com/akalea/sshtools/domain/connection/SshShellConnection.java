@@ -7,7 +7,6 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.Session;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class SshShellConnection extends SshConnection {
+public class SshShellConnection extends SshConnection<SshCommand, SshCommandExecution> {
 
     public SshShellConnection(Session session) {
         super(session, SshConnectionType.shell);

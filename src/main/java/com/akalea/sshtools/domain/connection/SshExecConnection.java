@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Session;
 
-public class SshExecConnection extends SshConnection {
+public class SshExecConnection extends SshConnection<SshCommand, SshCommandExecution> {
 
     public SshExecConnection(Session session) {
         super(session, SshConnectionType.command);

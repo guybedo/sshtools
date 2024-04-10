@@ -1,12 +1,8 @@
 package com.akalea.sshtools.domain.session;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.akalea.sshtools.domain.command.SftpCommand;
 import com.akalea.sshtools.domain.command.SshCommand;
 import com.akalea.sshtools.domain.command.SshCommandExecution;
 import com.akalea.sshtools.domain.connection.SshConnection;
@@ -197,6 +194,10 @@ public class SshSession {
         return this;
     }
 
+    public List<SshCommandExecution> sshExec(List<SshCommand> commands, boolean keepAlive) {
+        return sshExec(commands, false, false, keepAlive);
+    }
+
     public List<SshCommandExecution> sshExec(
         List<SshCommand> commands,
         boolean sourceProfiles,
@@ -231,13 +232,13 @@ public class SshSession {
     }
 
     public List<SshCommandExecution> sftp(
-        List<SshCommand> commands,
+        List<SftpCommand> commands,
         boolean failOnError,
         boolean keepAlive) {
         try {
             assertConnected();
             SshConnection connection = SshConnection.of(SshConnectionType.sftp).apply(session);
-            return connection.executeCommands(commands, failOnError);
+            return (List) connection.executeCommands(commands, failOnError);
         } finally {
             if (!keepAlive)
                 disconnect();
@@ -294,9 +295,10 @@ public class SshSession {
         connect();
     }
 
-    public void connect() {
+    public SshSession connect() {
         try {
             session.connect();
+            return this;
         } catch (JSchException e) {
             throw new RuntimeException(e);
         }

@@ -30,6 +30,18 @@ public class SshCommandExecution<R> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        String str =
+            String.format(
+                "%s: %s",
+                this.command.toString(),
+                this.isError() ? "ko" : "ok");
+        if (isError() && this.t != null)
+            str = String.format("%s (%s)", str, this.t.getMessage());
+        return str;
+    }
+
     public boolean isError() {
         return t != null || (stderr != null && stderr.size() > 0);
     }

@@ -10,7 +10,7 @@ import com.akalea.sshtools.domain.command.SshCommandExecution;
 import com.akalea.sshtools.domain.session.SshConnectionType;
 import com.jcraft.jsch.Session;
 
-public class SshTunnel extends SshConnection {
+public class SshTunnel extends SshConnection<SshCommand, SshCommandExecution> {
 
     private final static Logger logger = LoggerFactory.getLogger(SshTunnel.class);
 

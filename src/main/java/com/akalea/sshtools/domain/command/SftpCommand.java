@@ -4,20 +4,68 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SftpCommand extends SshCommand<Boolean> {
 
-    public static enum SftpCommandType {
+    public static enum SftpCommandId {
             rm, rename, ls, get, put, quit, chgrp, chown, chmod, rmdir, mkdir, pwd
     }
 
-    private SftpCommandType type;
-    private Object[]        args;
+    private SftpCommandId id;
+    private Object[]      args;
 
-    public SftpCommand(SftpCommandType type, Object... args) {
+    public SftpCommand(SftpCommandId type, Object... args) {
         super(toSshCommand(type, args));
-        this.type = type;
+        this.id = type;
         this.args = args;
     }
 
-    private static String toSshCommand(SftpCommandType type, Object... args) {
+    public static SftpCommand rm(Object... args) {
+        return new SftpCommand(SftpCommandId.rm, args);
+    }
+
+    public static SftpCommand rename(Object... args) {
+        return new SftpCommand(SftpCommandId.rename, args);
+    }
+
+    public static SftpCommand ls(Object... args) {
+        return new SftpCommand(SftpCommandId.ls, args);
+    }
+
+    public static SftpCommand get(Object... args) {
+        return new SftpCommand(SftpCommandId.get, args);
+    }
+
+    public static SftpCommand put(Object... args) {
+        return new SftpCommand(SftpCommandId.put, args);
+    }
+
+    public static SftpCommand quit(Object... args) {
+        return new SftpCommand(SftpCommandId.quit, args);
+    }
+
+    public static SftpCommand chgrp(Object... args) {
+        return new SftpCommand(SftpCommandId.chgrp, args);
+    }
+
+    public static SftpCommand chown(Object... args) {
+        return new SftpCommand(SftpCommandId.chown, args);
+    }
+
+    public static SftpCommand chmod(Object... args) {
+        return new SftpCommand(SftpCommandId.chmod, args);
+    }
+
+    public static SftpCommand rmdir(Object... args) {
+        return new SftpCommand(SftpCommandId.rmdir, args);
+    }
+
+    public static SftpCommand mkdir(Object... args) {
+        return new SftpCommand(SftpCommandId.mkdir, args);
+    }
+
+    public static SftpCommand pwd(Object... args) {
+        return new SftpCommand(SftpCommandId.pwd, args);
+    }
+
+    private static String toSshCommand(SftpCommandId type, Object... args) {
         return String.format("%s %s", type.toString(), StringUtils.join(args));
     }
 
@@ -25,15 +73,15 @@ public class SftpCommand extends SshCommand<Boolean> {
     public String toString() {
         return String.format(
             "SftpCommand [command=%s]",
-            toSshCommand(type, args));
+            toSshCommand(id, args));
     }
 
-    public SftpCommandType getType() {
-        return type;
+    public SftpCommandId getId() {
+        return id;
     }
 
-    public void setType(SftpCommandType type) {
-        this.type = type;
+    public void setId(SftpCommandId type) {
+        this.id = type;
     }
 
     public Object[] getArgs() {
