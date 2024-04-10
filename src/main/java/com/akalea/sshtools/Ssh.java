@@ -1,26 +1,28 @@
 package com.akalea.sshtools;
 
+import java.util.Optional;
+
 import com.akalea.sshtools.domain.connection.SshTunnel;
+import com.akalea.sshtools.domain.helpers.CpuInfo;
+import com.akalea.sshtools.domain.helpers.File;
+import com.akalea.sshtools.domain.helpers.MemInfo;
+import com.akalea.sshtools.domain.helpers.Process;
+import com.akalea.sshtools.domain.helpers.SftpExec;
+import com.akalea.sshtools.domain.helpers.SshExec;
+import com.akalea.sshtools.domain.helpers.impl.CpuInfoHelper;
+import com.akalea.sshtools.domain.helpers.impl.FileHelper;
+import com.akalea.sshtools.domain.helpers.impl.MemInfoHelper;
+import com.akalea.sshtools.domain.helpers.impl.ProcessHelper;
+import com.akalea.sshtools.domain.helpers.impl.SftpExecHelper;
+import com.akalea.sshtools.domain.helpers.impl.SshExecHelper;
+import com.akalea.sshtools.domain.helpers.wrap.CpuInfoWrapper;
+import com.akalea.sshtools.domain.helpers.wrap.FileWrapper;
+import com.akalea.sshtools.domain.helpers.wrap.MemInfoWrapper;
+import com.akalea.sshtools.domain.helpers.wrap.SftpExecWrapper;
+import com.akalea.sshtools.domain.helpers.wrap.SshExecWrapper;
 import com.akalea.sshtools.domain.session.SshServerInfo;
 import com.akalea.sshtools.domain.session.SshSession;
 import com.akalea.sshtools.domain.session.SshSessionConfiguration;
-import com.akalea.sshtools.helper.CpuInfo;
-import com.akalea.sshtools.helper.File;
-import com.akalea.sshtools.helper.MemInfo;
-import com.akalea.sshtools.helper.Process;
-import com.akalea.sshtools.helper.SftpExec;
-import com.akalea.sshtools.helper.SshExec;
-import com.akalea.sshtools.helper.impl.CpuInfoHelper;
-import com.akalea.sshtools.helper.impl.FileHelper;
-import com.akalea.sshtools.helper.impl.MemInfoHelper;
-import com.akalea.sshtools.helper.impl.ProcessHelper;
-import com.akalea.sshtools.helper.impl.SftpExecHelper;
-import com.akalea.sshtools.helper.impl.SshExecHelper;
-import com.akalea.sshtools.helper.wrap.CpuInfoWrapper;
-import com.akalea.sshtools.helper.wrap.FileWrapper;
-import com.akalea.sshtools.helper.wrap.MemInfoWrapper;
-import com.akalea.sshtools.helper.wrap.SftpExecWrapper;
-import com.akalea.sshtools.helper.wrap.SshExecWrapper;
 
 public class Ssh {
 
@@ -94,26 +96,20 @@ public class Ssh {
             return new SshExecHelper(session, keepSessionAlive);
         return new SshExecWrapper(() -> SshSession.of(configuration));
     }
-    
+
     public SftpExec sftp() {
         if (this.keepSessionAlive)
             return new SftpExecHelper(session, keepSessionAlive);
         return new SftpExecWrapper(() -> SshSession.of(configuration));
     }
 
-    public static SshTunnel tunnel(
-        SshServerInfo serverInfo,
-        String remoteHost,
-        int remotePort) {
-        return tunnel(new SshSessionConfiguration().setServer(serverInfo), remoteHost, remotePort);
-    }
-
-    public static SshTunnel tunnel(
-        SshSessionConfiguration configuration,
-        String remoteHost,
-        int remotePort) {
-        return SshSession
-            .of(configuration)
+    public SshTunnel tunnel(String remoteHost, int remotePort) {
+        return Optional
+            .ofNullable(session)
+            .orElseGet(
+                () -> SshSession
+                    .of(configuration)
+                    .connect())
             .tunnel(remoteHost, remotePort);
     }
 
