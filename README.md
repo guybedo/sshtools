@@ -1,11 +1,31 @@
-# sshtools
+sshtools
+--------
+
 Java SSH tools - easier SSH &amp; SFTP in Java
 
-Sshtools is a wrapper around http://www.jcraft.com/jsch/. The goal is to make it easier to do SSH & SFTP in Java, as using Jsch can be a little tricky.
+Sshtools is a wrapper around http://www.jcraft.com/jsch/. 
 
-# usage
+The goal is to make it easier to do SSH & SFTP in Java, as using Jsch can be tricky.
 
-### Setup your SSH connection:
+Getting Started
+---------------
+
+Maven
+-----
+
+```xml
+<dependency>
+    <groupId>com.akalea</groupId>
+    <artifactId>ssh-tools</artifactId>
+    <version>0.2.0</version>
+</dependency>
+```
+
+Usage
+-----
+
+**Setup your SSH connection**:
+
 ```java
 SshServerInfo serverInfo =
     new SshServerInfo(
@@ -15,26 +35,36 @@ SshServerInfo serverInfo =
         null);
 ```
 
-### Delete a file:
+**Delete a file**:
+
 ```java
-SshProcesses
-    .files()
-    .deleteFile(
-        serverInfo,
-        "/home/user/test.txt",
-        true,
-        true);
+Ssh
+	.of(serverInfo)
+	.file()
+	.deleteFile("/home/user/test.txt");
 ```
 
-### Execute shell commands:
+**Execute shell commands**:
+
 ```java 
-List<SshCommand> commands =
-    Lists.newArrayList(
-        new SshCommand("java -version"),
-        new SshCommand("cd /data"),
-        new SshCommand("ls -l"));
-SshService
-    .shell(serverInfo, commands, false)
+Ssh
+    .of(serverInfo)
+    .command()
+    .execute(commands);
 ```
+
+**SFTP**:
+
+```java 
+Ssh
+	.of(serverInfo)
+	.sftp()
+	.execute(
+	    Lists.newArrayList(
+	        SftpCommand.put(localFile, remoteFile),
+	        SftpCommand.get(remoteFile, downloadedFile)));
+```
+
+**OTHER EXAMPLES**:
 
 You can find examples here: [Examples](http://github.com/guybedo/sshtools/tree/master/src/main/java/com/akalea/sshtools/example)
