@@ -18,7 +18,7 @@ public class DeleteFile {
         Ssh
             .of(serverInfo)
             .file()
-            .deleteFile("/home/user/test.txt", true, true);
+            .deleteFile("/home/user/test.txt");
 
     }
 }

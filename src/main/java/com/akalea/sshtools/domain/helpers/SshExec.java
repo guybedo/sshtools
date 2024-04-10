@@ -7,7 +7,9 @@ import com.akalea.sshtools.domain.command.SshCommandExecution;
 
 public interface SshExec {
 
-    List<SshCommandExecution> execute(List<SshCommand> commands);
+    default List<SshCommandExecution> execute(List<SshCommand> commands) {
+        return execute(commands, false, true);
+    }
 
     List<SshCommandExecution> execute(
         List<SshCommand> commands,

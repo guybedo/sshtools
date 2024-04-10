@@ -13,16 +13,28 @@ public interface File {
 
     List<FileInfo> listFiles(String path);
 
+    default void copyFile(String src, String dst) {
+        copyFile(src, dst, false, false);
+    }
+
     void copyFile(
         String src,
         String dst,
         boolean force,
         boolean recursive);
 
+    default void moveFile(String src, String dst) {
+        moveFile(src, dst, false);
+    }
+
     void moveFile(
         String src,
         String dst,
         boolean force);
+
+    default void deleteFile(String path) {
+        deleteFile(path, false, false);
+    }
 
     void deleteFile(
         String path,

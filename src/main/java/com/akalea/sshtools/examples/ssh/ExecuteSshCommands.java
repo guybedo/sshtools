@@ -29,7 +29,7 @@ public class ExecuteSshCommands {
         Ssh
             .of(serverInfo)
             .command()
-            .execute(commands, false, true)
+            .execute(commands)
             .stream()
             .forEach(execution -> {
                 System.out.println(StringUtils.join(execution.getStdout(), "\n"));
