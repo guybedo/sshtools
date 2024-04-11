@@ -17,20 +17,20 @@ public class SftpCommand extends SshCommand<Boolean> {
         this.args = args;
     }
 
-    public static SftpCommand rm(Object... args) {
-        return new SftpCommand(SftpCommandId.rm, args);
+    public static SftpCommand rm(String path) {
+        return new SftpCommand(SftpCommandId.rm, path);
     }
 
-    public static SftpCommand rename(Object... args) {
-        return new SftpCommand(SftpCommandId.rename, args);
+    public static SftpCommand rename(String oldpath, String newpath) {
+        return new SftpCommand(SftpCommandId.rename, oldpath, newpath);
     }
 
-    public static SftpCommand ls(Object... args) {
-        return new SftpCommand(SftpCommandId.ls, args);
+    public static SftpCommand ls(String path) {
+        return new SftpCommand(SftpCommandId.ls, path);
     }
 
-    public static SftpCommand get(Object... args) {
-        return new SftpCommand(SftpCommandId.get, args);
+    public static SftpCommand get(String src, String dst) {
+        return new SftpCommand(SftpCommandId.get, src, dst);
     }
 
     public static SftpCommand put(Object... args) {
@@ -45,24 +45,24 @@ public class SftpCommand extends SshCommand<Boolean> {
         return new SftpCommand(SftpCommandId.chgrp, args);
     }
 
-    public static SftpCommand chown(Object... args) {
-        return new SftpCommand(SftpCommandId.chown, args);
+    public static SftpCommand chown(int uid, String path) {
+        return new SftpCommand(SftpCommandId.chown, uid, path);
     }
 
-    public static SftpCommand chmod(Object... args) {
-        return new SftpCommand(SftpCommandId.chmod, args);
+    public static SftpCommand chmod(int permissions, String path) {
+        return new SftpCommand(SftpCommandId.chmod, permissions, path);
     }
 
-    public static SftpCommand rmdir(Object... args) {
-        return new SftpCommand(SftpCommandId.rmdir, args);
+    public static SftpCommand rmdir(String path) {
+        return new SftpCommand(SftpCommandId.rmdir, path);
     }
 
-    public static SftpCommand mkdir(Object... args) {
-        return new SftpCommand(SftpCommandId.mkdir, args);
+    public static SftpCommand mkdir(String path) {
+        return new SftpCommand(SftpCommandId.mkdir, path);
     }
 
-    public static SftpCommand pwd(Object... args) {
-        return new SftpCommand(SftpCommandId.pwd, args);
+    public static SftpCommand pwd() {
+        return new SftpCommand(SftpCommandId.pwd);
     }
 
     private static String toSshCommand(SftpCommandId type, Object... args) {

@@ -237,6 +237,7 @@ public class SftpConnection extends SshConnection<SftpCommand, SshCommandExecuti
                     return execution;
                 }
             };
+
         throw new RuntimeException("Unknown ftp command");
     }
 
