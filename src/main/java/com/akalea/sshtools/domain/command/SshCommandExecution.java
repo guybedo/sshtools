@@ -34,11 +34,13 @@ public class SshCommandExecution<R> {
     public String toString() {
         String str =
             String.format(
-                "%s: %s",
+                "%s (%s)",
                 this.command.toString(),
                 this.isError() ? "ko" : "ok");
         if (isError() && this.t != null)
-            str = String.format("%s (%s)", str, this.t.getMessage());
+            str = String.format("%s: %s", str, this.t.getMessage());
+        else if (this.result != null)
+            str = String.format("%s: %s", str, this.result.toString());
         return str;
     }
 

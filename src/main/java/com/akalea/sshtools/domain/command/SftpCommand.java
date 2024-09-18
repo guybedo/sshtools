@@ -72,7 +72,7 @@ public class SftpCommand extends SshCommand<Boolean> {
     @Override
     public String toString() {
         return String.format(
-            "SftpCommand [command=%s]",
+            "[%s]",
             toSshCommand(id, args));
     }
 
